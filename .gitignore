@@ -1,0 +1,14 @@
+.DS_Store
+.coverage/
+.vimrc
+.vscode/
+_dist/
+_proto/*.pb.go
+rootfs/tiller
+rootfs/rudder
+vendor/
+*.exe
+.idea/
+index.yaml
+teamcity*.tgz
+mysql*.tgz

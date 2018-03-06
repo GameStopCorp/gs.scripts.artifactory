@@ -2,30 +2,36 @@
 
 # param $1 -> string -> secrets bucket name
 # param $2 -> string -> file name that contains the auth token
-# returns  -> string -> the auth token string
+# param $3 -> return var string -> the auth token string
 function acquireArtifactoryToken {
-    echo "----- Acquiring Artifactory Token -----"
-    secretsBucket=$1
-    fileName=$2
+    echo "Acquiring Artifactory Token {"
     
-    aws s3 cp s3://$secretsBucket/$fileName $fileName --only-show-errors
+    local secretsBucket=$1
+    local fileName=$2
+    local __result=$3
+    local url=s3://$secretsBucket/$fileName
+
+    aws s3 cp $url $fileName --only-show-errors
     
-    value="$(cat $fileName)"
+    artifactoryToken="$(cat $fileName)"
     rm -f $fileName
     
-    return $value
+    eval $__result="'$artifactoryToken'"
+    echo "} Token Download Complete"
 }
 
 # param $1 -> string -> artifactory repository URL up to the folder
 # param $2 -> string -> package name including the file extension
 # param $3 -> string -> auth token 
-# return -> int -> HTTP status code returned from the curl command
+# param $4 -> return int -> HTTP status code returned from the curl command
 function uploadArtifact {  
-    echo "----- Begin publish to Artifactory -----"
-    repo="$1"
-    package="$2"
-    token="$3"
-    url="$repo/$package"
+    echo "Begin publish to Artifactory {"
+    
+    local repo="$1"
+    local package="$2"
+    local token="$3"
+    local __result=$4
+    local url="$repo/$package"
 
     # input validation
     if [ ! $repo ]; then
@@ -51,22 +57,23 @@ function uploadArtifact {
         echo "--- Did you forget to update the chart version number? ---"
     fi
 
-    echo "End publish to Artifactory"
+    echo "} End publish to Artifactory"
 
-    return $response
+    eval $__result="'$response'"
 }
 
 # param $1 -> string -> artifactory repository URL up to the folder
 # param $2 -> string -> package name including the file extension
 # param $3 -> string -> local file name to download to
 # param $4 -> string -> auth token 
-# return -> int -> HTTP status code returned from the curl command
+# param $5 -> return int -> HTTP status code returned from the curl command
 function downloadArtifact {
     echo "----- BEGIN download from Artifactory -----"
-    repo="$1"
-    package="$2"
-    fileName="$3"
-    token="$4"
+    local repo="$1"
+    local package="$2"
+    local fileName="$3"
+    local token="$4"
+    local __result=$5
     url="$repo/$package"
 
     # input validation
@@ -100,5 +107,5 @@ function downloadArtifact {
     
     echo "----- END download from Artifactory -----"
     
-    return $response
+    eval $__result="'$response'"
 }
