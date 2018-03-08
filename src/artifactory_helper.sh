@@ -11,6 +11,9 @@ function acquireArtifactoryToken {
     local __result=$3
     local url=s3://$secretsBucket/$fileName
 
+    # Configure aws signature v4 to get encrypted items out of a bucket
+    aws configure set s3.signature_version s3v4
+
     aws s3 cp $url $fileName --only-show-errors
     
     artifactoryToken="$(cat $fileName)"
