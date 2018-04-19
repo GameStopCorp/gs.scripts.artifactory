@@ -1,0 +1,4 @@
+registry=https://gme.jfrog.io/gme/api/npm/npm/
+@gamestop:registry=https://gme.jfrog.io/gme/api/npm/npm/
+_auth={{ARTIFACTORY_AUTH}}
+always-auth=true
