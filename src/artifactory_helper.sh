@@ -123,7 +123,7 @@ function doArtifactoryAuth {
     # sed -e "s/{{ARTIFACTORY_AUTH}}/${artifactoryAuth}/" .npmrc.template > .npmrc
     # sed -e "s/{{ARTIFACTORY_USER}}/${username}/" -e "s/{{ARTIFACTORY_API_KEY}}/${apiKey}/" nuget.config.template > nuget.config
 
-    nuget sources Add -Name Artifactory2 -Source https://gme.jfrog.io/gme/api/nuget/nuget-deployables-gs-shared-services
-    nuget sources update -Name Artifactory2 -UserName $username -Password "$username:$apiKey"
+    nuget sources Add -Name Artifactory-mike -Source https://gme.jfrog.io/gme/api/nuget/nuget-deployables-gs-shared-services
+    nuget sources update -Name Artifactory-mike -UserName $username -Password "$username:$apiKey"
     echo "----- END doArtifactoryAuth -----"
 }
