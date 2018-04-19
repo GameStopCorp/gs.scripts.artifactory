@@ -4,8 +4,7 @@
 # param $2 -> string -> file name that contains the auth token
 # param $3 -> return var string -> the auth token string
 function acquireArtifactoryToken {
-    echo "Acquiring Artifactory Token {"
-    
+    echo "----- BEGIN acquireArtifactoryToken -----"
     local secretsBucket=$1
     local fileName=$2
     local __result=$3
@@ -20,15 +19,15 @@ function acquireArtifactoryToken {
     rm -f $fileName
     
     eval $__result="'$artifactoryToken'"
-    echo "} Token Download Complete"
+    echo "----- END acquireArtifactoryToken -----"
 }
 
 # param $1 -> string -> artifactory repository URL up to the folder
 # param $2 -> string -> package name including the file extension
 # param $3 -> string -> auth token 
 # param $4 -> return int -> HTTP status code returned from the curl command
-function uploadArtifact {  
-    echo "Begin publish to Artifactory {"
+function uploadArtifact {
+    echo "----- BEGIN uploadArtifact -----"
     
     local repo="$1"
     local package="$2"
@@ -60,7 +59,7 @@ function uploadArtifact {
         echo "--- Did you forget to update the chart version number? ---"
     fi
 
-    echo "} End publish to Artifactory"
+    echo "----- END uploadArtifact -----"
 
     eval $__result="'$response'"
 }
@@ -114,8 +113,9 @@ function downloadArtifact {
 }
 
 function doArtifactoryAuth {
-    echo "running auth"
+    echo "----- BEGIN doArtifactoryAuth -----"
     ARTIFACTORY_AUTH=$(printf $ARTIFACTORY_USER:$ARTIFACTORY_API_KEY | base64 --wrap=0)
     sed -e "s/{{ARTIFACTORY_AUTH}}/${ARTIFACTORY_AUTH}/" .npmrc.template > .npmrc
     sed -e "s/{{ARTIFACTORY_USER}}/${ARTIFACTORY_USER}/" -e "s/{{ARTIFACTORY_API_KEY}}/${ARTIFACTORY_API_KEY}/" nuget.config.template > nuget.config
+    echo "----- END doArtifactoryAuth -----"
 }
