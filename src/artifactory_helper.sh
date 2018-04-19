@@ -112,10 +112,14 @@ function downloadArtifact {
     eval $__result="'$response'"
 }
 
+# param $1 -> string -> Artifactory username
+# param $2 -> string -> Artifactory API key
 function doArtifactoryAuth {
     echo "----- BEGIN doArtifactoryAuth -----"
-    ARTIFACTORY_AUTH=$(printf $ARTIFACTORY_USER:$ARTIFACTORY_API_KEY | base64 --wrap=0)
-    sed -e "s/{{ARTIFACTORY_AUTH}}/${ARTIFACTORY_AUTH}/" .npmrc.template > .npmrc
-    sed -e "s/{{ARTIFACTORY_USER}}/${ARTIFACTORY_USER}/" -e "s/{{ARTIFACTORY_API_KEY}}/${ARTIFACTORY_API_KEY}/" nuget.config.template > nuget.config
+    local username=$1
+    local apiKey=$2
+    artifactoryAuth=$(printf $username:$apiKey | base64 --wrap=0)
+    sed -e "s/{{ARTIFACTORY_AUTH}}/${artifactoryAuth}/" .npmrc.template > .npmrc
+    sed -e "s/{{ARTIFACTORY_USER}}/${username}/" -e "s/{{ARTIFACTORY_API_KEY}}/${apiKey}/" nuget.config.template > nuget.config
     echo "----- END doArtifactoryAuth -----"
 }
