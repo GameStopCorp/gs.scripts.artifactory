@@ -112,3 +112,10 @@ function downloadArtifact {
     
     eval $__result="'$response'"
 }
+
+function doArtifactoryAuth {
+    echo "running auth"
+    ARTIFACTORY_AUTH=$(printf $ARTIFACTORY_USER:$ARTIFACTORY_API_KEY | base64 --wrap=0)
+    sed -e "s/{{ARTIFACTORY_AUTH}}/${ARTIFACTORY_AUTH}/" .npmrc.template > .npmrc
+    sed -e "s/{{ARTIFACTORY_USER}}/${ARTIFACTORY_USER}/" -e "s/{{ARTIFACTORY_API_KEY}}/${ARTIFACTORY_API_KEY}/" nuget.config.template > nuget.config
+}
