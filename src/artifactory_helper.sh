@@ -151,11 +151,13 @@ function authenticateNpm {
     echo "----- BEGIN authenticateNpm -----"
     local user=$1
     local apiKey=$2
+    local npmToken=$(printf $user:$apiKey | base64 --wrap=0)
 
-    npm config set registry https://gme.jfrog.io/gme/api/npm/npm/
-    npmToken=$(printf $user:$apiKey | base64 --wrap=0)
-    npm config set '_auth' $npmToken
-    npm config set 'always-auth' true
+    rm -f .npmrc
+
+    echo "registry=https://gme.jfrog.io/gme/api/npm/npm/" > ./.npmrc
+    echo "_auth=\"$npmToken\"" >> ./.npmrc
+    echo "always-auth=true" >> ./.npmrc
 
     echo "----- END authenticateNpm -----"
 }
