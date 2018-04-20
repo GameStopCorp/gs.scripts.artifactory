@@ -137,6 +137,7 @@ function doArtifactoryAuth {
                       -Password $apiKey \
                       -StorePasswordInClearText \
                       -configfile nuget.config
+    nuget sources remove -Name "https://www.nuget.org/api/v2/" -configfile nuget.config # Why is this getting added?!?!?!
 
     if [ $publishTarget ]; then
         nuget sources add -Name ArtifactoryPublish \
@@ -146,5 +147,6 @@ function doArtifactoryAuth {
                           -StorePasswordInClearText \
                           -configfile nuget.config
     fi
+
     echo "----- END doArtifactoryAuth -----"
 }
