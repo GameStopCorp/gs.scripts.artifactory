@@ -152,8 +152,6 @@ function authenticateNpm {
     local user=$1
     local apiKey=$2
 
-    rm -f .npmrc && touch .npmrc
-
     npm config set registry https://gme.jfrog.io/gme/api/npm/npm/
     npmToken=$(printf $user:$apiKey | base64 --wrap=0)
     npm config set '_auth' $npmToken
