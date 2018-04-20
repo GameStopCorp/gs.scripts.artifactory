@@ -141,7 +141,7 @@ function doArtifactoryAuth {
 
     if [ $publishTarget ]; then
         nuget sources add -Name ArtifactoryPublish \
-                          -Source https://gme.jfrog.io/gme/api/nuget/nuget-deployables-gs-shared-services/gs.gateway.storeinformation \
+                          -Source $publishTarget \
                           -UserName $ARTIFACTORY_USER \
                           -Password $ARTIFACTORY_API_KEY \
                           -StorePasswordInClearText \
@@ -149,4 +149,18 @@ function doArtifactoryAuth {
     fi
 
     echo "----- END doArtifactoryAuth -----"
+}
+
+# param $1 -> string -> filename
+function publishNugetPackage {
+    echo "----- BEGIN publishNugetDeployable -----"
+    local user=$1
+    local apiKey=$2
+    local publishTarget=$3
+    local filename=$4
+
+    doArtifactoryAuth $user $apiKey $publishTarget
+
+    nuget push $filename -Source ArtifactoryPublish -configfile nuget.config
+    echo "----- END publishNugetDeployable -----"
 }
