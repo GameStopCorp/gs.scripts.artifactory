@@ -114,25 +114,37 @@ function downloadArtifact {
 
 # param $1 -> string -> Artifactory username
 # param $2 -> string -> Artifactory API key
+# param $3 -> string -> Pubish target (optional)
 function doArtifactoryAuth {
     echo "----- BEGIN doArtifactoryAuth -----"
     local user=$1
     local apiKey=$2
+    local publishTarget=$3
 
-    # artifactoryAuth=$(printf $username:$apiKey | base64 --wrap=0)
-    # sed -e "s/{{ARTIFACTORY_AUTH}}/${artifactoryAuth}/" .npmrc.template > .npmrc
-    # sed -e "s/{{ARTIFACTORY_USER}}/${username}/" -e "s/{{ARTIFACTORY_API_KEY}}/${apiKey}/" nuget.config.template > nuget.config
+    rm -f .npmrc && touch .npmrc
+    rm -f nuget.config && touch nuget.config
+    echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" >> nuget.config
+    echo "<configuration><packageSources><clear /></packageSources></configuration>" >> nuget.config
 
     npm config set registry https://gme.jfrog.io/gme/api/npm/npm/
     npmToken=$(printf $user:$apiKey | base64 --wrap=0)
     npm config set '_auth' $npmToken
     npm config set 'always-auth' true
-    echo $npmToken
 
     nuget sources add -Name Artifactory \
                       -Source https://gme.jfrog.io/gme/api/nuget/nuget \
                       -UserName $user \
-                      -Password $apiKey
+                      -Password $apiKey \
+                      -StorePasswordInClearText \
+                      -configfile nuget.config
 
+    if [ $publishTarget ]; then
+        nuget sources add -Name ArtifactoryPublish \
+                          -Source https://gme.jfrog.io/gme/api/nuget/nuget-deployables-gs-shared-services/gs.gateway.storeinformation \
+                          -UserName $ARTIFACTORY_USER \
+                          -Password $ARTIFACTORY_API_KEY \
+                          -StorePasswordInClearText \
+                          -configfile nuget.config
+    fi
     echo "----- END doArtifactoryAuth -----"
 }
