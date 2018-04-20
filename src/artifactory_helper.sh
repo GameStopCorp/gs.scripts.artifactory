@@ -151,7 +151,10 @@ function doArtifactoryAuth {
     echo "----- END doArtifactoryAuth -----"
 }
 
-# param $1 -> string -> filename
+# param $1 -> string -> Artifactory username
+# param $2 -> string -> Artifactory API key
+# param $3 -> string -> Pubish target
+# param $4 -> string -> Filename to publish
 function publishNugetPackage {
     echo "----- BEGIN publishNugetDeployable -----"
     local user=$1
