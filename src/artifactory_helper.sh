@@ -114,12 +114,56 @@ function downloadArtifact {
 
 # param $1 -> string -> Artifactory username
 # param $2 -> string -> Artifactory API key
+# param $3 -> string -> Pubish target (optional)
 function doArtifactoryAuth {
     echo "----- BEGIN doArtifactoryAuth -----"
-    local username=$1
+    local user=$1
     local apiKey=$2
-    artifactoryAuth=$(printf $username:$apiKey | base64 --wrap=0)
-    sed -e "s/{{ARTIFACTORY_AUTH}}/${artifactoryAuth}/" .npmrc.template > .npmrc
-    sed -e "s/{{ARTIFACTORY_USER}}/${username}/" -e "s/{{ARTIFACTORY_API_KEY}}/${apiKey}/" nuget.config.template > nuget.config
+    local publishTarget=$3
+
+    rm -f .npmrc && touch .npmrc
+    rm -f nuget.config && touch nuget.config
+    echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" >> nuget.config
+    echo "<configuration><packageSources><clear /></packageSources></configuration>" >> nuget.config
+
+    npm config set registry https://gme.jfrog.io/gme/api/npm/npm/
+    npmToken=$(printf $user:$apiKey | base64 --wrap=0)
+    npm config set '_auth' $npmToken
+    npm config set 'always-auth' true
+
+    nuget sources add -Name Artifactory \
+                      -Source https://gme.jfrog.io/gme/api/nuget/nuget \
+                      -UserName $user \
+                      -Password $apiKey \
+                      -StorePasswordInClearText \
+                      -configfile nuget.config
+    nuget sources remove -Name "https://www.nuget.org/api/v2/" -configfile nuget.config # Why is this getting added?!?!?!
+
+    if [ $publishTarget ]; then
+        nuget sources add -Name ArtifactoryPublish \
+                          -Source $publishTarget \
+                          -UserName $ARTIFACTORY_USER \
+                          -Password $ARTIFACTORY_API_KEY \
+                          -StorePasswordInClearText \
+                          -configfile nuget.config
+    fi
+
     echo "----- END doArtifactoryAuth -----"
+}
+
+# param $1 -> string -> Artifactory username
+# param $2 -> string -> Artifactory API key
+# param $3 -> string -> Pubish target
+# param $4 -> string -> Filename to publish
+function publishNugetPackage {
+    echo "----- BEGIN publishNugetDeployable -----"
+    local user=$1
+    local apiKey=$2
+    local publishTarget=$3
+    local filename=$4
+
+    doArtifactoryAuth $user $apiKey $publishTarget
+
+    nuget push $filename -Source ArtifactoryPublish -configfile nuget.config
+    echo "----- END publishNugetDeployable -----"
 }
