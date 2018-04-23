@@ -147,23 +147,6 @@ function authenticateNuget {
 
 # param $1 -> string -> Artifactory username
 # param $2 -> string -> Artifactory API key
-function authenticateNpm {
-    echo "----- BEGIN authenticateNpm -----"
-    local user=$1
-    local apiKey=$2
-    local npmToken=$(printf $user:$apiKey | base64 --wrap=0)
-
-    rm -f .npmrc
-
-    npm config set registry https://gme.jfrog.io/gme/api/npm/npm
-    npm config set '_auth' $npmToken
-    npm config set 'always-auth' true
-
-    echo "----- END authenticateNpm -----"
-}
-
-# param $1 -> string -> Artifactory username
-# param $2 -> string -> Artifactory API key
 # param $3 -> string -> Publish target
 # param $4 -> string -> Filename to publish
 function publishNugetPackage {
@@ -177,4 +160,22 @@ function publishNugetPackage {
 
     nuget push $filename -Source ArtifactoryPublish -configfile nuget.config
     echo "----- END publishNugetDeployable -----"
+}
+
+# param $1 -> string -> Artifactory username
+# param $2 -> string -> Artifactory API key
+function authenticateNpm {
+    echo "----- BEGIN authenticateNpm -----"
+    local user=$1
+    local apiKey=$2
+    local npmToken=$(printf $user:$apiKey | base64 --wrap=0)
+
+    rm -f .npmrc
+
+    npm config set registry https://gme.jfrog.io/gme/api/npm/npm
+    npm config set @gamestop:registry https://gme.jfrog.io/gme/api/npm/npm-local
+    npm config set '_auth' $npmToken
+    npm config set 'always-auth' true
+
+    echo "----- END authenticateNpm -----"
 }
