@@ -173,9 +173,7 @@ function authenticateNpm {
     rm -f .npmrc
 
     npm config set registry https://gme.jfrog.io/gme/api/npm/npm
-    npm config set @gamestop:registry https://gme.jfrog.io/gme/api/npm/npm-local
     npm config set '_auth' $npmToken
-    npm config set '@gamestop:_auth' $npmToken
     npm config set 'always-auth' true
 
     echo "----- END authenticateNpm -----"
