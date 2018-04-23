@@ -115,21 +115,15 @@ function downloadArtifact {
 # param $1 -> string -> Artifactory username
 # param $2 -> string -> Artifactory API key
 # param $3 -> string -> Pubish target (optional)
-function doArtifactoryAuth {
-    echo "----- BEGIN doArtifactoryAuth -----"
+function authenticateNuget {
+    echo "----- BEGIN authenticateNuget -----"
     local user=$1
     local apiKey=$2
     local publishTarget=$3
 
-    rm -f .npmrc && touch .npmrc
     rm -f nuget.config && touch nuget.config
     echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" >> nuget.config
     echo "<configuration><packageSources><clear /></packageSources></configuration>" >> nuget.config
-
-    npm config set registry https://gme.jfrog.io/gme/api/npm/npm/
-    npmToken=$(printf $user:$apiKey | base64 --wrap=0)
-    npm config set '_auth' $npmToken
-    npm config set 'always-auth' true
 
     nuget sources add -Name Artifactory \
                       -Source https://gme.jfrog.io/gme/api/nuget/nuget \
@@ -148,12 +142,12 @@ function doArtifactoryAuth {
                           -configfile nuget.config
     fi
 
-    echo "----- END doArtifactoryAuth -----"
+    echo "----- END authenticateNuget -----"
 }
 
 # param $1 -> string -> Artifactory username
 # param $2 -> string -> Artifactory API key
-# param $3 -> string -> Pubish target
+# param $3 -> string -> Publish target
 # param $4 -> string -> Filename to publish
 function publishNugetPackage {
     echo "----- BEGIN publishNugetDeployable -----"
@@ -166,4 +160,22 @@ function publishNugetPackage {
 
     nuget push $filename -Source ArtifactoryPublish -configfile nuget.config
     echo "----- END publishNugetDeployable -----"
+}
+
+# param $1 -> string -> Artifactory username
+# param $2 -> string -> Artifactory API key
+function authenticateNpm {
+    echo "----- BEGIN authenticateNpm -----"
+    local user=$1
+    local apiKey=$2
+    local npmToken=$(printf $user:$apiKey | base64 --wrap=0)
+
+    rm -f .npmrc
+
+    npm config set registry https://gme.jfrog.io/gme/api/npm/npm
+    npm config set '_auth' $npmToken
+    npm config set 'always-auth' true
+    npm config set email cibot@gamestop.com
+
+    echo "----- END authenticateNpm -----"
 }
