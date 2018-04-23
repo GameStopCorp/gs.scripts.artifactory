@@ -155,9 +155,9 @@ function authenticateNpm {
 
     rm -f .npmrc
 
-    echo "registry=https://gme.jfrog.io/gme/api/npm/npm/" > ./.npmrc
-    echo "_auth=\"$npmToken\"" >> ./.npmrc
-    echo "always-auth=true" >> ./.npmrc
+    npm config set registry https://gme.jfrog.io/gme/api/npm/npm
+    npm config set '_auth' $npmToken
+    npm config set 'always-auth' true
 
     echo "----- END authenticateNpm -----"
 }
