@@ -5,7 +5,7 @@ source ./src/artifactory_helper.sh
 function acquireArtifactoryToken_happy_path {
 
     local bucket="motherhen-tools-d0083-motherhensecretsbucket-8sy4gshlk0o1"
-    local fileName="ArtifactoryChartsPublishAccessToken.enc"
+    local fileName="artifactory-api-key.txt"
 
     acquireArtifactoryToken $bucket $fileName result
 
@@ -13,15 +13,15 @@ function acquireArtifactoryToken_happy_path {
         echo "Token is null"
         exit 1
     fi
-} 
+}
 
 function uploadArtifact_happy_path {
     
     # get token
     local bucket="motherhen-tools-d0083-motherhensecretsbucket-8sy4gshlk0o1"
-    local fileName="ArtifactoryChartsPublishAccessToken.enc"
+    local fileName="artifactory-api-key.txt"
     acquireArtifactoryToken $bucket $fileName artifactoryToken
-    
+    echo $artifactoryToken
     # create test file
     local fileName="foo.txt"
     echo 'Hello, world.' > $fileName
@@ -39,7 +39,7 @@ function uploadArtifact_happy_path {
 function downloadArtifact_happy_path {
 
     local bucket="motherhen-tools-d0083-motherhensecretsbucket-8sy4gshlk0o1"
-    local fileName="ArtifactoryChartsPublishAccessToken.enc"
+    local fileName="artifactory-api-key.txt"
     acquireArtifactoryToken $bucket $fileName artifactoryToken
 
     local repo="https://gme.jfrog.io/gme/charts"
