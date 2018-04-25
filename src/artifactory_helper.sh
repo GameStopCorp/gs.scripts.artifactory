@@ -56,6 +56,7 @@ function uploadArtifact {
     else
         echo "Unexpected HTTP:$response received from publish"
         echo "--- Did you forget to update the chart version number? ---"
+        exit 1
     fi
 
     echo "----- END uploadArtifact -----"
@@ -101,10 +102,11 @@ function downloadArtifact {
     else
         echo "Unexpected HTTP:$response received from download"
         echo "--- Is this a valid version of the package? ($package) ---"
+        exit 1
     fi
     
     echo "----- END download from Artifactory -----"
-    
+
     eval $__result="'$response'"
 }
 
@@ -152,7 +154,7 @@ function publishNugetPackage {
     local publishTarget=$3
     local filename=$4
 
-    doArtifactoryAuth $user $apiKey $publishTarget
+    authenticateNuget $user $apiKey $publishTarget
 
     nuget push $filename -Source ArtifactoryPublish -configfile nuget.config
     echo "----- END publishNugetDeployable -----"

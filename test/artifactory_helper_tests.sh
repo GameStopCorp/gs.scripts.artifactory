@@ -21,7 +21,7 @@ function uploadArtifact_happy_path {
     local bucket="motherhen-tools-d0083-motherhensecretsbucket-8sy4gshlk0o1"
     local fileName="artifactory-api-key.txt"
     acquireArtifactoryToken $bucket $fileName artifactoryToken
-    echo $artifactoryToken
+
     # create test file
     local fileName="foo.txt"
     echo 'Hello, world.' > $fileName
