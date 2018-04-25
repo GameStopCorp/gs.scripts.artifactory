@@ -33,7 +33,11 @@ function uploadArtifact_happy_path {
 
     rm $fileName
 
-    echo $result
+    if [ $result -ne "201" ]
+    then
+        echo "Invalid result: $result"
+        exit 1
+    fi
 }
 
 function downloadArtifact_happy_path {
@@ -59,5 +63,9 @@ function downloadArtifact_happy_path {
     
     rm $fileName
 
-    echo $result
+    if [ $result -ne "200" ]
+    then
+        echo "Invalid result: $result"
+        exit 1
+    fi
 }
