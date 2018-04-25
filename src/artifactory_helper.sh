@@ -24,14 +24,14 @@ function acquireArtifactoryToken {
 
 # param $1 -> string -> artifactory repository URL up to the folder
 # param $2 -> string -> package name including the file extension
-# param $3 -> string -> auth token 
+# param $3 -> string -> API key
 # param $4 -> return int -> HTTP status code returned from the curl command
 function uploadArtifact {
     echo "----- BEGIN uploadArtifact -----"
     
     local repo="$1"
     local package="$2"
-    local token="$3"
+    local apiKey="$3"
     local __result=$4
     local url="$repo/$package"
 
@@ -47,9 +47,8 @@ function uploadArtifact {
         exit 1
     fi
 
-    #upload file to Artifactory
-    response=$(curl -LI -H "Authorization: Bearer $token" -T ./$package $url -o /dev/null -w '%{http_code}\n' -s)
-    echo "Artifactory upload CURL response was HTTP:$response"
+    # upload file to Artifactory
+    response=$(curl --header "X-JFrog-Art-Api: $apiKey" -T ./$package $url -o /dev/null -w '%{http_code}\n' -s)
 
     #check and make sure the CURL command worked
     if [ $response -le 201 ] ; then
@@ -57,6 +56,7 @@ function uploadArtifact {
     else
         echo "Unexpected HTTP:$response received from publish"
         echo "--- Did you forget to update the chart version number? ---"
+        exit 1
     fi
 
     echo "----- END uploadArtifact -----"
@@ -67,14 +67,14 @@ function uploadArtifact {
 # param $1 -> string -> artifactory repository URL up to the folder
 # param $2 -> string -> package name including the file extension
 # param $3 -> string -> local file name to download to
-# param $4 -> string -> auth token 
+# param $4 -> string -> API key
 # param $5 -> return int -> HTTP status code returned from the curl command
 function downloadArtifact {
     echo "----- BEGIN download from Artifactory -----"
     local repo="$1"
     local package="$2"
     local fileName="$3"
-    local token="$4"
+    local apiKey="$4"
     local __result=$5
     url="$repo/$package"
 
@@ -88,16 +88,13 @@ function downloadArtifact {
     elif [ ! $fileName ]; then
         echo "Parameter: FileName cannot be empty"
         exit 1
-    elif [ ! $token ]; then
-        echo "Parameter: Token cannot be empty"
+    elif [ ! $apiKey ]; then
+        echo "Parameter: apiKey cannot be empty"
         exit 1
     fi
 
-    echo "INFO: package = $package"
-
     # --location makes curl follow a redirect
-    response=$(curl --location --header "Authorization: Bearer $token" --remote-name $url --output curl.log --write-out '%{http_code}\n' --silent)
-    echo "Artifactory download curl response was HTTP: $response"
+    response=$(curl --location --header "X-JFrog-Art-Api: $apiKey" --remote-name $url --output curl.log --write-out '%{http_code}\n' --silent)
     
     # check and make sure the CURL command worked
     if [[ $response -le 201 ]] ; then
@@ -105,10 +102,11 @@ function downloadArtifact {
     else
         echo "Unexpected HTTP:$response received from download"
         echo "--- Is this a valid version of the package? ($package) ---"
+        exit 1
     fi
     
     echo "----- END download from Artifactory -----"
-    
+
     eval $__result="'$response'"
 }
 
@@ -156,7 +154,7 @@ function publishNugetPackage {
     local publishTarget=$3
     local filename=$4
 
-    doArtifactoryAuth $user $apiKey $publishTarget
+    authenticateNuget $user $apiKey $publishTarget
 
     nuget push $filename -Source ArtifactoryPublish -configfile nuget.config
     echo "----- END publishNugetDeployable -----"
