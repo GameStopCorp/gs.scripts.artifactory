@@ -147,16 +147,31 @@ function authenticateNuget {
 # param $2 -> string -> Artifactory API key
 # param $3 -> string -> Publish target
 # param $4 -> string -> Filename to publish
+# param $5 -> number -> timeout in seconds (defaults to 300)
 function publishNugetPackage {
     echo "----- BEGIN publishNugetDeployable -----"
     local user=$1
     local apiKey=$2
     local publishTarget=$3
     local filename=$4
+    local timeout=$5
 
-    authenticateNuget $user $apiKey $publishTarget
+    # default timeout to 5 minutes (which is the default for nuget push)
+    if [ -z "${timeout}" ]; then
+        timeout=300
+    fi
 
-    nuget push $filename -Source ArtifactoryPublish -configfile nuget.config
+    authenticateNuget ${user} ${apiKey} ${publishTarget}
+
+    if command -v dotnet; then
+        # nuget times out for bigger files, even with the timeout option set,
+        # so if you have dotnet core installed, we will use that instead
+        # to do the nuget push. We can't use it to pack because dotnet
+        # expects a project file while nuget will use your .nuspec file.
+        dotnet nuget push ${filename} --source ArtifactoryPublish --timeout ${timeout}
+    else
+        nuget push ${filename} -Source ArtifactoryPublish -ConfigFile nuget.config -Timeout ${timeout}
+    fi
     echo "----- END publishNugetDeployable -----"
 }
 
