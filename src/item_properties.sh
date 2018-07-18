@@ -81,4 +81,3 @@ function setArtifactCommitFail
     setArtifactStageStatus $1 $2 $3 commit FAILED
 }
 
-setArtifactStageStatus 512883 AKCp5aTbdmLkAuV2XnF2rVJZiHVPfEijtxi9JuXy6qcPLJz5d1zvAGUuYpodFWYDzQkEkpKXt npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz test failure
