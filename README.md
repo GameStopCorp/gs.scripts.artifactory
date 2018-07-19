@@ -26,30 +26,30 @@ source /gs.scripts.artifactory/src/artifactory_helper.sh
 downloadArtifact $repo $package $fileName $apiKey result
 ```
 
-### To set the commit stage status to FAILED on an artifact
+### To set the commit stage status to FAIL on an artifact
 
 ```bash
 source /gs.scripts.artifactory/src/item_properties.sh
-setArtifactCommitFail user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz
+setArtifactStageFail user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit
 ```
 
-### To set the commit stage status to PASSED on an artifact
+### To set the commit stage status to PASS on an artifact
 
 ```bash
 source /gs.scripts.artifactory/src/item_properties.sh
-setArtifactCommitPass user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz
+setArtifactStagePass user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit
 ```
 
-### To (generically) set a stage status on an artifact
+### To (generically) set the commit stage status value to FAIL on an artifact
 
 ```bash
 source /gs.scripts.artifactory/src/item_properties.sh
-setArtifactStageStatus user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz test FAILURE
+setArtifactStageStatus user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit FAIL
 ```
 
-### To (even more generically) set an artifact item property and value
+### To (even more generically) set the commit stage status value to FAIL on an artifact
 
 ```bash
 source /gs.scripts.artifactory/src/item_properties.sh
-setArtifactPropertyValue user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz stage.test.status FAILURE
+setArtifactPropertyValue user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz stage.commit.status FAIL
 ```

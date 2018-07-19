@@ -2,6 +2,10 @@
 #
 # Purpose: bash scripts that get/set/update properties on artifactory items
 #
+# NOTE: if bash supported Object-Oriented principles, this function/method would be private; 
+# Instead of directly calling this function, please add a convenience method for your specific use-case.
+# That way you will be less tempted/likely to modify this base method and therefore corrupt any other usages thereof.
+# 
 function setArtifactPropertyValue
 {
     echo "INFO: ---- BEGIN setArtifactPropertyValue -----"
@@ -29,11 +33,12 @@ function setArtifactPropertyValue
         echo "INFO: Success! (property and value added to item in Artifactory)"
     elif [ $response -eq 401 ]; then # authentication troubles
         echo "ERROR: authentication failed! (please check your user and apiKey values)"
+        exit 1
     elif [ $response -eq 404 ]; then # item path invalid
         echo "ERROR: item path invalid! (please check artifactory for exact path)"
+        exit 1
     else
         echo "ERROR: Unexpected HTTP:$response received from property add"
-        echo "------ Most likely cause: item path is invalid: $baseUrl/$itemPath ---"
         exit 1
     fi
 
@@ -42,8 +47,9 @@ function setArtifactPropertyValue
     __result="'$response'" # fix the result returned from this command to be the curl response
 }
 
-# convenience/uniformity method for setting the stage status property
-# example: setArtifactStageStatus user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit FAILED
+# generic convenience/uniformity method for setting a given stage's status property to an open value
+# NOTE: see setArtifactStagePass/setArtifactStageFail for uniform status values
+# example: setArtifactStageStatus user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit FAIL
 function setArtifactStageStatus
 {
     if [[ $# -ne 5 ]]; then
@@ -55,29 +61,29 @@ function setArtifactStageStatus
     setArtifactPropertyValue $1 $2 $3 stage.$4.status $5
 }
 
-# convenience method for STAGE=COMMIT and STATUS=PASS
-# example: setArtifactCommitFail user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz
-function setArtifactCommitPass
+# convenience/uniformity method for setting a given stage's status property to PASS
+# example: setArtifactStagePass user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit
+function setArtifactStagePass
 {
-    if [[ $# -ne 3 ]]; then
+    if [[ $# -ne 4 ]]; then
         echo "ERROR: Invalid number of parameters!"
-        echo "------ Usage: setArtifactCommitPass user apiKey itemPath stage status"
+        echo "------ Usage: setArtifactStagePass user apiKey itemPath stage"
         exit 1
     fi
 
-    setArtifactStageStatus $1 $2 $3 commit PASSED
+    setArtifactStageStatus $1 $2 $3 $4 PASS
 }
 
-# convenience method for STAGE=COMMIT and STATUS=FAIL
-# example: setArtifactCommitFail user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz
-function setArtifactCommitFail
+# convenience/uniformity method for setting a given stage's status property to FAIL
+# example: setArtifactStageFail user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit
+function setArtifactStageFail
 {
-    if [[ $# -ne 3 ]]; then
+    if [[ $# -ne 4 ]]; then
         echo "ERROR: Invalid number of parameters!"
-        echo "------ Usage: setArtifactCommitFail user apiKey itemPath stage status"
+        echo "------ Usage: setArtifactStageFail user apiKey itemPath stage"
         exit 1
     fi
 
-    setArtifactStageStatus $1 $2 $3 commit FAILED
+    setArtifactStageStatus $1 $2 $3 $4 FAIL
 }
 
