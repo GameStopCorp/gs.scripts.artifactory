@@ -1,6 +1,6 @@
 # gs.scripts.artifactory
 
-This repository contains some helper scripts that will facilitate interaction with Artifactory.
+This repository contains bash scripts that facilitate interaction with GameStop's Jfrog Artifactory.
 
 ## Usage
 
@@ -24,4 +24,32 @@ uploadArtifact $repo $package $apiKey result
 ```bash
 source /gs.scripts.artifactory/src/artifactory_helper.sh
 downloadArtifact $repo $package $fileName $apiKey result
+```
+
+### To set the commit stage status to FAIL on an artifact
+
+```bash
+source /gs.scripts.artifactory/src/item_properties.sh
+setArtifactStageFail user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit
+```
+
+### To set the commit stage status to PASS on an artifact
+
+```bash
+source /gs.scripts.artifactory/src/item_properties.sh
+setArtifactStagePass user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit
+```
+
+### To (generically) set the commit stage status value to FAIL on an artifact
+
+```bash
+source /gs.scripts.artifactory/src/item_properties.sh
+setArtifactStageStatus user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz commit FAIL
+```
+
+### To (even more generically) set the commit stage status value to FAIL on an artifact
+
+```bash
+source /gs.scripts.artifactory/src/item_properties.sh
+setArtifactPropertyValue user apiKey npm-local/@gamestop/bunyan-lambda/-/@gamestop/bunyan-lambda-2.1.4.tgz stage.commit.status FAIL
 ```
