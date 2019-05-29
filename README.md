@@ -1,3 +1,6 @@
+# MIGRATED
+This repo has been migrated to GitLab at https://gitlab.com/gamestopcorp/tools/artifactory-helper
+
 # gs.scripts.artifactory
 
 This repository contains bash scripts that facilitate interaction with GameStop's Jfrog Artifactory.
