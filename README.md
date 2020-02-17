@@ -1,5 +1,5 @@
 # MIGRATED
-This repo has been migrated to GitLab at https://gitlab.com/gamestopcorp/tools/artifactory-helper
+This repo has been migrated to GitLab at https://gitlab.com/gamestopcorp/platform/tools/artifactory-helper
 
 # gs.scripts.artifactory
 
